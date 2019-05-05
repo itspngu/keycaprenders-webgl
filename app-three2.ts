@@ -2,18 +2,18 @@ declare var THREE: any;
 namespace KeyboardRender {
     // Required JS
     var loadPkg = [
-        '/three/controls/OrbitControls.js',
-        '/three/loaders/GLTFLoader.js',
-        '/three/loaders/DRACOLoader.js',
-        '/three/pmrem/PMREMGenerator.js',
-        '/three/pmrem/PMREMCubeUVPacker.js',
-        '/three/modifiers/SubdivisionModifier.js',
-		'/three/js/shaders/CopyShader.js',
-		'/three/js/shaders/SMAAShader.js',
-		'/three/js/postprocessing/EffectComposer.js',
-		'/three/js/postprocessing/SMAAPass.js',
-		'/three/js/postprocessing/RenderPass.js',
-		'/three/js/postprocessing/ShaderPass.js',
+        'three/controls/OrbitControls.js',
+        'three/loaders/GLTFLoader.js',
+        'three/loaders/DRACOLoader.js',
+        'three/pmrem/PMREMGenerator.js',
+        'three/pmrem/PMREMCubeUVPacker.js',
+        'three/modifiers/SubdivisionModifier.js',
+		'three/js/shaders/CopyShader.js',
+		'three/js/shaders/SMAAShader.js',
+		'three/js/postprocessing/EffectComposer.js',
+		'three/js/postprocessing/SMAAPass.js',
+		'three/js/postprocessing/RenderPass.js',
+		'three/js/postprocessing/ShaderPass.js',
     ];
 
     // DOM
@@ -279,7 +279,7 @@ namespace KeyboardRender {
         clickGuard.addEventListener('click', clickClickGuard);
 
         // Do stuff
-        await loadUp('/three/three.js');
+        await loadUp('three/three.js');
         loadStuff().then(()=>{
             console.log("Done loading, let's go!");
             setupOptions();

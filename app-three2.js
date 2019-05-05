@@ -37,18 +37,18 @@ var KeyboardRender;
 (function (KeyboardRender) {
     // Required JS
     var loadPkg = [
-        '/three/controls/OrbitControls.js',
-        '/three/loaders/GLTFLoader.js',
-        '/three/loaders/DRACOLoader.js',
-        '/three/pmrem/PMREMGenerator.js',
-        '/three/pmrem/PMREMCubeUVPacker.js',
-        '/three/modifiers/SubdivisionModifier.js',
-        '/three/js/shaders/CopyShader.js',
-        '/three/js/shaders/SMAAShader.js',
-        '/three/js/postprocessing/EffectComposer.js',
-        '/three/js/postprocessing/SMAAPass.js',
-        '/three/js/postprocessing/RenderPass.js',
-        '/three/js/postprocessing/ShaderPass.js',
+        'three/controls/OrbitControls.js',
+        'three/loaders/GLTFLoader.js',
+        'three/loaders/DRACOLoader.js',
+        'three/pmrem/PMREMGenerator.js',
+        'three/pmrem/PMREMCubeUVPacker.js',
+        'three/modifiers/SubdivisionModifier.js',
+        'three/js/shaders/CopyShader.js',
+        'three/js/shaders/SMAAShader.js',
+        'three/js/postprocessing/EffectComposer.js',
+        'three/js/postprocessing/SMAAPass.js',
+        'three/js/postprocessing/RenderPass.js',
+        'three/js/postprocessing/ShaderPass.js',
     ];
     // DOM
     var appWrapper;
@@ -302,7 +302,7 @@ var KeyboardRender;
                         // Events
                         clickGuard.addEventListener('click', clickClickGuard);
                         // Do stuff
-                        return [4 /*yield*/, loadUp('/three/three.js')];
+                        return [4 /*yield*/, loadUp('three/three.js')];
                     case 1:
                         // Do stuff
                         _a.sent();
