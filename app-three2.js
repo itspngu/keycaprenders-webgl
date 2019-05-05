@@ -231,6 +231,15 @@ var KeyboardRender;
         return false;
     }
     KeyboardRender.setColor = setColor;
+    function setCamera(x, y, z) {
+        camera.position.set(x, y, z);
+        camera.lookAt(scene.position);
+    }
+    KeyboardRender.setCamera = setCamera;
+    function getCamera() {
+        return [camera.position.x, camera.position.y, camera.position.z];
+    }
+    KeyboardRender.getCamera = getCamera;
     function hideUI() {
         optionWrapper.style.display = "none";
     }
@@ -419,7 +428,7 @@ var KeyboardRender;
     // THREE JS STUFF
     function threeInit() {
         camera = new THREE.PerspectiveCamera(50, threeContainer.offsetWidth / threeContainer.offsetHeight, 0.1, 100);
-        camera.position.set(-6.5, 6, 1);
+        camera.position.set(-3.2, 4.6, 0);
         controls = new THREE.OrbitControls(camera, threeContainer);
         controls.screenSpacePanning = true;
         scene = new THREE.Scene();
@@ -460,18 +469,21 @@ var KeyboardRender;
         //let subdivisions = 1;
         //let modifier = new THREE.SubdivisionModifier(subdivisions);
         // Colors and Material
-        //let textureLoader = new THREE.TextureLoader();
-        //let metalTexture = textureLoader.load(getMetalTexture());
+        var textureLoader = new THREE.TextureLoader();
+        var metalBump = textureLoader.load('assets/white_noise.jpg');
+        metalBump.repeat.set(2, 2);
+        metalBump.wrapS = metalBump.wrapT = THREE.RepeatWrapping;
+        metalBump.format = THREE.RGBFormat;
         materials.keyboardColor = new THREE.MeshStandardMaterial({
             color: materialColors.keyboardColor,
             side: THREE.DoubleSide,
             dithering: true,
             envMap: textureCube,
-            envMapIntensity: 10,
-            //bumpMap: metalTexture,
-            //bumpScale: 1.0,
-            roughness: 0.3,
-            metalness: 1.0,
+            envMapIntensity: 5,
+            bumpMap: metalBump,
+            bumpScale: 12,
+            roughness: 0.45,
+            metalness: 0.95,
         });
         // Materials
         materials.modLegends = new THREE.MeshStandardMaterial({
@@ -544,7 +556,7 @@ var KeyboardRender;
             scene.add(gltf.scene);
         });
         KeyboardRender.renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
-        //renderer.shadowMap.enabled = true;
+        KeyboardRender.renderer.shadowMap.enabled = true;
         KeyboardRender.renderer.setPixelRatio(window.devicePixelRatio);
         KeyboardRender.renderer.setSize(threeContainer.offsetWidth, threeContainer.offsetHeight);
         var composer = new THREE.EffectComposer(KeyboardRender.renderer);

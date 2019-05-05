@@ -204,6 +204,15 @@ namespace KeyboardRender {
         } else console.error(`ERROR: "${opt}" is not a property of setOpts.`);
         return false;
     }
+	
+	export function setCamera(x, y, z): void {
+		camera.position.set(x, y, z);
+		camera.lookAt(scene.position);
+	}
+	
+	export function getCamera(): number[] {
+		return [camera.position.x, camera.position.y, camera.position.z];
+	}
 
     export function hideUI(): void {
         optionWrapper.style.display = "none";
@@ -395,7 +404,7 @@ namespace KeyboardRender {
     // THREE JS STUFF
     function threeInit(): void {
         camera = new THREE.PerspectiveCamera( 50, threeContainer.offsetWidth / threeContainer.offsetHeight, 0.1, 100 );
-        camera.position.set(-6.5, 6, 1);
+        camera.position.set(-3.2, 4.6, 0);
         controls = new THREE.OrbitControls( camera, threeContainer );
 		controls.screenSpacePanning = true;
         scene = new THREE.Scene();
@@ -442,19 +451,22 @@ namespace KeyboardRender {
         //let modifier = new THREE.SubdivisionModifier(subdivisions);
 
         // Colors and Material
-        //let textureLoader = new THREE.TextureLoader();
-        //let metalTexture = textureLoader.load(getMetalTexture());
+        let textureLoader = new THREE.TextureLoader();
+        let metalBump = textureLoader.load('assets/white_noise.jpg');
+		metalBump.repeat.set(2, 2);
+		metalBump.wrapS = metalBump.wrapT = THREE.RepeatWrapping;
+		metalBump.format = THREE.RGBFormat;
 
         materials.keyboardColor = new THREE.MeshStandardMaterial({
             color: materialColors.keyboardColor,
             side: THREE.DoubleSide,
             dithering: true,
             envMap: textureCube,
-			envMapIntensity: 10,
-            //bumpMap: metalTexture,
-            //bumpScale: 1.0,
-            roughness: 0.3,
-            metalness: 1.0,
+			envMapIntensity: 5,
+            bumpMap: metalBump,
+            bumpScale: 12,
+            roughness: 0.45,
+            metalness: 0.95,
             //emissive: 0xffffff,
             //emissiveIntensity: 0.01
         });
@@ -534,7 +546,7 @@ namespace KeyboardRender {
         });
 
         renderer = new THREE.WebGLRenderer({antialias: true, preserveDrawingBuffer: true});
-        //renderer.shadowMap.enabled = true;
+        renderer.shadowMap.enabled = true;
         renderer.setPixelRatio( window.devicePixelRatio );
         renderer.setSize(threeContainer.offsetWidth, threeContainer.offsetHeight);
 		

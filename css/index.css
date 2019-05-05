@@ -34,7 +34,7 @@ canvas {
     top: 0;
     left: 0;
     right: 0;
-    height: 90vh;
+    height: 100%;
     width: 100%;
 }
 
@@ -182,8 +182,8 @@ canvas {
 }
 
 #action_buttons i {
-	margin: 0 0.2em 0 0;
-	display: inline-block;
+	margin: 0 0 0.2em 0;
+	display: block;
 }
 
 .sidebar .sidebar_button, #save_render, #info, #fullscreen, #exitfullscreen, #camera_cycle, #settings {

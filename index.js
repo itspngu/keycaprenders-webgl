@@ -1,3 +1,6 @@
+var camera = 0;
+var camera_views = [[-3.2, 4.6, 0], [-0.4, 5.3, 0], [-4, 3.5, 1.3]];
+
 $(document).ready(function() {
 	
 	$('[name="alpha_bg"]').paletteColorPicker({
@@ -214,6 +217,16 @@ $("#fullscreen").click(function() {
 $("#exitfullscreen").click(function() {
 	$(document).infopop("You quit fullscreen mode.");
 	$.fullscreen.exit();
+});
+
+$("#camera_cycle").click(function() {
+	if (camera == 2) camera = 0;
+	else camera++;
+	
+	window.KeyboardRender.setCamera(camera_views[camera][0], camera_views[camera][1], camera_views[camera][2]);
+	
+	//var pos = window.KeyboardRender.getCamera();
+	//alert(pos[0] + ' ' + pos[1] + ' ' + pos[2]);
 });
 
 $(document).bind('fscreenchange', function(e, state, elem) {
