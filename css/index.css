@@ -179,12 +179,11 @@ canvas {
 	position: fixed;
 	left: 0;
 	top: 0;
-	bottom: 0;
 }
 
 #action_buttons i {
-	margin: 0 0 0.2em 0;
-	display: block;
+	margin: 0 0.2em 0 0;
+	display: inline-block;
 }
 
 .sidebar .sidebar_button, #save_render, #info, #fullscreen, #exitfullscreen, #camera_cycle, #settings {
@@ -263,6 +262,27 @@ i#exitfullscreen {
 #colors .palette-color-picker-bubble > span.swatch > span {
 	display: inline-block;
 	font-family: 'Roboto', sans-serif;
+}
+
+.sp-dd {
+	display: none;
+}
+
+.sp-replacer {
+	padding: 0;
+	border: none;
+	background: rgba(0, 0, 0, 0);
+	border-radius: 4px;
+	width: 2.3em;
+	height: 2.3em;
+	margin: -1pt 8pt 0 0;
+}
+
+.sp-preview {
+	vertical-align: middle;
+	border: none;
+	width: 2.3em;
+	height: 2.3em;
 }
 
 .modal {

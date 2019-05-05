@@ -129,33 +129,46 @@ $(document).ready(function() {
 });
 
 $('[name="alpha_bg"]').on('input', function() {
-	$('[data-target="alpha_bg"]').css("background", $(this).attr("value"));
-	window.KeyboardRender.setColor("alphaBackground", $(this).attr("value"));
+	$('[data-target="alpha_bg"]').css("background", this.value);
+	window.KeyboardRender.setColor("alphaBackground", this.value);
 });
 
 $('[name="alpha_leg"]').on('input', function() {
-	$('[data-target="alpha_leg"]').css("background", $(this).attr("value"));
-	window.KeyboardRender.setColor("alphaLegends", $(this).attr("value"));
+	$('[data-target="alpha_leg"]').css("background", this.value);
+	window.KeyboardRender.setColor("alphaLegends", this.value);
 });
 
 $('[name="mod_bg"]').on('input', function() {
-	$('[data-target="mod_bg"]').css("background", $(this).attr("value"));
-	window.KeyboardRender.setColor("modBackground", $(this).attr("value"));
+	$('[data-target="mod_bg"]').css("background", this.value);
+	window.KeyboardRender.setColor("modBackground", this.value);
 });
 
 $('[name="mod_leg"]').on('input', function() {
-	$('[data-target="mod_leg"]').css("background", $(this).attr("value"));
-	window.KeyboardRender.setColor("modLegends", $(this).attr("value"));
+	$('[data-target="mod_leg"]').css("background", this.value);
+	window.KeyboardRender.setColor("modLegends", this.value);
 });
 
 $('[name="accent_bg"]').on('input', function() {
-	$('[data-target="accent_bg"]').css("background", $(this).attr("value"));
-	window.KeyboardRender.setColor("accentBackground", $(this).attr("value"));
+	$('[data-target="accent_bg"]').css("background", this.value);
+	window.KeyboardRender.setColor("accentBackground", this.value);
 });
 
 $('[name="accent_leg"]').on('input', function() {
-	$('[data-target="accent_leg"]').css("background", $(this).attr("value"));
-	window.KeyboardRender.setColor("accentLegends", $(this).attr("value"));
+	$('[data-target="accent_leg"]').css("background", this.value);
+	window.KeyboardRender.setColor("accentLegends", this.value);
+});
+
+$('[name="kb"]').on('input', function() {
+	$('[name="keyboard_dummy"]').spectrum("set", this.value);
+	window.KeyboardRender.setColor("keyboardColor", this.value);
+});
+
+$('[name="keyboard_dummy"]').spectrum({
+	change: function(color) {
+		$('[name="kb"]').val(color.toHexString());
+		$('[name="kb"]').trigger("input");
+	},
+	replacerClassName: 'sp_kb_replacer'
 });
 
 $("#sidebar_colors .sidebar_button").click(function(e) {
