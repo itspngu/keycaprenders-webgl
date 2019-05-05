@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KeycapRenders.com - Live Render Beta</title>
+	<link rel="stylesheet" href="css/palette-color-picker.css"/>
+	<link rel="stylesheet" href="css/normalize.css">
+	<link rel="stylesheet" href="css/skeleton.css">
+	<link rel="stylesheet" href="css/index.css"/>
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet"> 
+	<link href="https://fonts.googleapis.com/css?family=Heebo:800" rel="stylesheet"> 
+	<link rel="icon" type="image/svg" href="img/favicon.png">
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="description" content="KeycapRenders.com renders your ideas for GMK Keycap sets for free! Render your keycap set now!">
+	<meta name="author" content="KeycapRenders.com">
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="KeycapRenders.com" />
+	<meta property="og:description" content="KeycapRenders.com renders your ideas for GMK Keycap sets for free! Render your keycap set now!" />
+	<meta property="og:url" content="http://KeycapRenders.com" />
+</head>
+<body>
+<div id="appWrapper" class="app-wrapper">
+	<div class="sidebar" id="sidebar_colors">
+		<div class="sidebar_left">
+			<i class="sidebar_button material-icons" title="Colors">color_lens</i>
+		</div>
+		<div class="sidebar_right">
+			<div id="colors">
+				<span>Alpha Background</span><input type="text" name="alpha_bg" value="CC">
+				<span>Mod Background</span><input type="text" name="mod_bg" value="N9">
+				<span>Accent Background</span><input type="text" name="accent_bg" value="#691F28">
+				<span>Alpha Legends</span><input type="text" name="alpha_leg" value="WS1">
+				<span>Mod Legends</span><input type="text" name="mod_leg" value="WS1">
+				<span>Accent Legends</span><input type="text" name="accent_leg" value="WS1">
+			</div>
+		</div>
+	</div>
+	<div id="action_buttons">
+		<i id="info" class="material-icons" title="About KeycapRenders.com">contact_support</i>
+		<i id="fullscreen" class="material-icons" title="Enter Fullscreen">fullscreen</i>
+		<i id="exitfullscreen" class="material-icons" title="Exit Fullscreen">fullscreen_exit</i>
+		<i id="settings" class="material-icons" title="Settings">settings</i>
+		<i id="save_render" class="material-icons" title="Save Render">add_a_photo</i><a id="saved_render"></a>
+		<i id="camera_cycle" class="material-icons" title="Cycle Cameras">switch_camera</i>
+	</div>
+	<h1 id="logo">KEYCAPRENDERS.COM<span>BETA</span></h1>
+	<a href="https://mykeyboard.eu" id="mykb" target="_new"><img src="img/mykb.png" alt="powered by MyKeyboard.eu"/></a>
+	<div id="settings_box" class="modal">
+		<div class="modal_inner">
+			<i class="material-icons close" id="settings_close">close</i>
+			<div class="container">
+				<div class="row">
+					<div class="twelve columns"><h4>Settings</h4></div>
+				</div>
+				<div class="row">
+					<div class="six columns">Todo</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="info_box" class="modal">
+		<div class="modal_inner">
+			<div class="container">
+				<div class="row">
+					<div class="twelve columns"><h4>About</h4></div>
+				</div>
+				<div class="row">
+					<div class="twelve columns">
+						<b>Ever wondered how to make keycap set renders?</b> KeycapRenders.com's goal is to provide you with free, fast, full-HD 1080p renders of GMK Keycap sets to help you visualize your ideas. Due to the complicated nature of CGI, our renders are not intended to replace the work of a professional, an artist can bring things to life a lot better and really make your ideas shine.
+					</div>
+				</div>
+				<div class="row">
+					<div class="twelve columns">
+						Looking for <b>professional renders, scenery, custom kits or have other special requirements?</b> Check out our portfolio for <a href="/render_services" target="_new">keyset render services</a>.
+					</div>
+				</div>
+				<div class="row">
+					<div class="twelve columns">
+						Like the service? Want to help keep it running? Feel free to <b><a href="https://www.paypal.me/itspngu" target="_new">make a donation</a></b>.
+					</div>
+				</div>
+			</div>
+			<a id="info_close" class="button-flat close">Close</a>
+		</div>
+	</div>
+
+    <div id="threeContainer" class="three-container"></div>
+    <div id="optionWrapper" class="option-wrapper">
+        <div id="pickerContainer" class="picker-container"></div>
+    </div>
+    <div id="clickGuard" class="click-guard"></div>
+</div>
+<script src="app-three2.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script src="js/jquery.fullscreen.min.js"></script>
+<script src="js/canvas-toBlob.js"></script>
+<script src="js/palette-color-picker.js"></script>
+<script src="index.js"></script>
+</body>
+</html>
