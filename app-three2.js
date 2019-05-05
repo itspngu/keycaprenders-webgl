@@ -556,13 +556,13 @@ var KeyboardRender;
             scene.add(gltf.scene);
         });
         KeyboardRender.renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
-        KeyboardRender.renderer.shadowMap.enabled = true;
+        //renderer.shadowMap.enabled = true;
         KeyboardRender.renderer.setPixelRatio(window.devicePixelRatio);
         KeyboardRender.renderer.setSize(threeContainer.offsetWidth, threeContainer.offsetHeight);
-        var composer = new THREE.EffectComposer(KeyboardRender.renderer);
-        composer.addPass(new THREE.RenderPass(scene, camera));
-        var pass = new THREE.SMAAPass(window.innerWidth * KeyboardRender.renderer.getPixelRatio(), window.innerHeight * KeyboardRender.renderer.getPixelRatio());
-        composer.addPass(pass);
+        /*let composer = new THREE.EffectComposer( renderer );
+        composer.addPass( new THREE.RenderPass( scene, camera ) );
+        let pass = new THREE.SMAAPass( window.innerWidth * renderer.getPixelRatio(), window.innerHeight * renderer.getPixelRatio() );
+        composer.addPass( pass );*/
         threeContainer.appendChild(KeyboardRender.renderer.domElement);
         window.addEventListener('resize', resize, false);
     }
