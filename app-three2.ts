@@ -639,10 +639,10 @@ namespace KeyboardRender {
         renderer.setPixelRatio( window.devicePixelRatio );
         renderer.setSize(threeContainer.offsetWidth, threeContainer.offsetHeight);
 		
-		let composer = new THREE.EffectComposer( renderer );
+		/*let composer = new THREE.EffectComposer( renderer );
 		composer.addPass( new THREE.RenderPass( scene, camera ) );
 		let pass = new THREE.SMAAPass( window.innerWidth * renderer.getPixelRatio(), window.innerHeight * renderer.getPixelRatio() );
-		composer.addPass( pass );
+		composer.addPass( pass );*/
 				
         threeContainer.appendChild( renderer.domElement );
         window.addEventListener( 'resize', resize, false );
