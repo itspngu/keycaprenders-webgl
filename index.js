@@ -166,12 +166,25 @@ $('[name="kb"]').on('input', function() {
 	window.KeyboardRender.setColor("keyboardColor", this.value);
 });
 
+$('[name="bg"]').on('input', function() {
+	$('[name="background_dummy"]').spectrum("set", this.value);
+	window.KeyboardRender.setColor("backgroundColor", this.value);
+});
+
 $('[name="keyboard_dummy"]').spectrum({
 	change: function(color) {
 		$('[name="kb"]').val(color.toHexString());
 		$('[name="kb"]').trigger("input");
 	},
 	replacerClassName: 'sp_kb_replacer'
+});
+
+$('[name="background_dummy"]').spectrum({
+	change: function(color) {
+		$('[name="bg"]').val(color.toHexString());
+		$('[name="bg"]').trigger("input");
+	},
+	replacerClassName: 'sp_bg_replacer'
 });
 
 $("#sidebar_colors .sidebar_button").click(function(e) {

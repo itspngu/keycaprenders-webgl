@@ -35,7 +35,8 @@ namespace KeyboardRender {
         alphaLegends: undefined,
         modBackground: undefined,
         accentBackground: undefined,
-        alphaBackground: undefined
+        alphaBackground: undefined,
+		backgroundColor: undefined
     };
 
     // Other Variables
@@ -48,7 +49,8 @@ namespace KeyboardRender {
         modBackground: '',
         modLegends: '',
         accentBackground: '',
-        accentLegends: ''
+        accentLegends: '',
+		backgroundColor: ''
     };
 
     var materialColors = {
@@ -58,7 +60,8 @@ namespace KeyboardRender {
         modBackground: undefined,
         modLegends: undefined,
         accentBackground: undefined,
-        accentLegends: undefined
+        accentLegends: undefined,
+		backgroundColor: undefined
     };
 
     var inputOptions = [
@@ -68,7 +71,8 @@ namespace KeyboardRender {
         { id: 'modBackground', type: 'colorInput', label: 'Mod Background', defaultInput: 'n9' },
         { id: 'modLegends', type: 'colorInput', label: "Mod Legends", defaultInput: 'ws1' },
         { id: 'accentBackground', type: 'colorInput', label: "Accent Background", defaultInput: 'ro2'},
-        { id: 'accentLegends', type: 'colorInput', label: "Accent Legends", defaultInput: 'ws1' }
+        { id: 'accentLegends', type: 'colorInput', label: "Accent Legends", defaultInput: 'ws1' },
+		{ id: 'backgroundColor', type: 'colorInput', label: "Background Color", defaultInput: '#ffffff' }
     ];
 
     var gmkColors = {
@@ -207,7 +211,7 @@ namespace KeyboardRender {
 	
 	export function setCamera(x, y, z): void {
 		camera.position.set(x, y, z);
-		camera.lookAt(scene.position);
+		camera.lookAt(0, 0, 0);
 	}
 	
 	export function getCamera(): number[] {
@@ -403,6 +407,8 @@ namespace KeyboardRender {
 
     // THREE JS STUFF
     function threeInit(): void {
+		renderer = new THREE.WebGLRenderer({antialias: true, preserveDrawingBuffer: true});
+	
         camera = new THREE.PerspectiveCamera( 50, threeContainer.offsetWidth / threeContainer.offsetHeight, 0.1, 100 );
         camera.position.set(-3.2, 4.6, 0);
         controls = new THREE.OrbitControls( camera, threeContainer );
@@ -413,15 +419,19 @@ namespace KeyboardRender {
         scene.fog = new THREE.Fog(255, 255, 255);
 
 
-        /*let pointLight1 = new THREE.PointLight( 0xffffff, 1.0 );
+        let pointLight1 = new THREE.PointLight( 0xffffff, 1.0 );
         pointLight1.position.set( -5, 5, 5);
         pointLight1.castShadow = true;
+		pointLight1.shadow.mapSize.width = 1024;
+		pointLight1.shadow.mapSize.height = 1024;
         scene.add( pointLight1 );
 
         let pointLight2 = new THREE.PointLight( 0xffffff, 0.5 );
         pointLight2.position.set( 0, 10, 0);
         pointLight2.castShadow = true;
-        scene.add( pointLight2 );*/
+		pointLight2.shadow.mapSize.width = 1024;
+		pointLight2.shadow.mapSize.height = 1024;
+        scene.add( pointLight2 );
 
         // envmap
         let path = "assets/cube_map_1/";
@@ -430,7 +440,7 @@ namespace KeyboardRender {
             path + "py.png", path + "ny.png",
             path + "pz.png", path + "nz.png"
         ];
-        let textureCube = new THREE.CubeTextureLoader().load( urls );
+        //let textureCube = new THREE.CubeTextureLoader().load( urls );
 		//scene.background = textureCube;
 
         // Plane
@@ -444,6 +454,68 @@ namespace KeyboardRender {
         plane2.position.x = -.01;
         scene.add(plane);
         scene.add(plane2);*/
+		
+		let textureLoader = new THREE.TextureLoader();
+		
+		let tableGeometry = new THREE.PlaneGeometry( 50, 50 );
+		
+		/*let tableDiffuse = textureLoader.load('assets/concrete_floor/concrete_floor_02_diff.jpg');
+		
+		tableDiffuse.repeat.set(4, 4);
+		tableDiffuse.wrapS = tableDiffuse.wrapT = THREE.RepeatWrapping;
+		tableDiffuse.format = THREE.RGBFormat;
+		
+		let tableBump = textureLoader.load('assets/concrete_floor/concrete_floor_02_bump.jpg');
+		
+		tableBump.repeat.set(4, 4);
+		tableBump.wrapS = tableBump.wrapT = THREE.RepeatWrapping;
+		tableBump.format = THREE.RGBFormat;
+		
+		let tableRoughness = textureLoader.load('assets/concrete_floor/concrete_floor_02_bump.jpg');
+		
+		tableRoughness.repeat.set(4, 4);
+		tableRoughness.wrapS = tableRoughness.wrapT = THREE.RepeatWrapping;
+		tableRoughness.format = THREE.RGBFormat;
+		
+		let tableAO = textureLoader.load('assets/concrete_floor/concrete_floor_02_ao.jpg');
+		
+		tableAO.repeat.set(4, 4);
+		tableAO.wrapS = tableAO.wrapT = THREE.RepeatWrapping;
+		tableAO.format = THREE.RGBFormat;
+		
+		let tableMaterial = new THREE.MeshStandardMaterial({
+			color: 0xffffff, 
+			side: THREE.DoubleSide,
+			map: tableDiffuse,
+			bumpMap: tableBump,
+			bumpScale: 0.001,
+			//roughnessMap: tableRoughness,
+			aoMap: tableAO,
+			roughness: 1,
+			metalness: 0,
+			//envMap: textureCube,
+			//envMapIntensity: 1
+		});*/
+		
+		materials.backgroundColor = new THREE.MeshStandardMaterial({
+			color: materialColors.backgroundColor, 
+			side: THREE.DoubleSide,
+			//map: tableDiffuse,
+			//bumpMap: tableBump,
+			//bumpScale: 0.001,
+			//roughnessMap: tableRoughness,
+			//aoMap: tableAO,
+			roughness: 1,
+			metalness: 0,
+			dithering: true,
+			//envMap: textureCube,
+			//envMapIntensity: 1
+		});
+		
+		let tablePlane = new THREE.Mesh( tableGeometry, materials.backgroundColor );
+		tablePlane.rotation.x = Math.PI / 2;
+		tablePlane.receiveShadow = true;
+		scene.add( tablePlane );
 
         // Smoother
         // TODO: Later
@@ -451,22 +523,22 @@ namespace KeyboardRender {
         //let modifier = new THREE.SubdivisionModifier(subdivisions);
 
         // Colors and Material
-        let textureLoader = new THREE.TextureLoader();
-        let metalBump = textureLoader.load('assets/white_noise.jpg');
-		metalBump.repeat.set(2, 2);
-		metalBump.wrapS = metalBump.wrapT = THREE.RepeatWrapping;
-		metalBump.format = THREE.RGBFormat;
+        let whiteNoise = textureLoader.load('assets/white_noise.png');
+		/*whiteNoise.repeat.set(1, 1);
+		whiteNoise.wrapS = whiteNoise.wrapT = THREE.RepeatWrapping;
+		whiteNoise.format = THREE.RGBFormat;*/
 
         materials.keyboardColor = new THREE.MeshStandardMaterial({
             color: materialColors.keyboardColor,
             side: THREE.DoubleSide,
             dithering: true,
-            envMap: textureCube,
-			envMapIntensity: 5,
-            bumpMap: metalBump,
-            bumpScale: 12,
-            roughness: 0.45,
-            metalness: 0.95,
+            //envMap: textureCube,
+			//envMapIntensity: 5,
+            bumpMap: whiteNoise,
+            bumpScale: 0.000001,
+            metalness: 0.8,
+			roughness: 1,
+			//roughnessMap: whiteNoise
             //emissive: 0xffffff,
             //emissiveIntensity: 0.01
         });
@@ -475,47 +547,65 @@ namespace KeyboardRender {
         materials.modLegends = new THREE.MeshStandardMaterial({
             color: materialColors.modLegends,
             dithering: true,
-            roughness: 0.7,
-            envMap: textureCube,
-            envMapIntensity: 15,
+            roughness: 1,
+            //envMap: textureCube,
+            //envMapIntensity: 15,
+			bumpMap: whiteNoise,
+            bumpScale: 0.1,
+            metalness: 0.1,
         });
         materials.accentLegends = new THREE.MeshStandardMaterial({
             color: materialColors.accentLegends,
             dithering: true,
-            roughness: 0.7,
-            envMap: textureCube,
-            envMapIntensity: 15,
+            roughness: 1,
+            //envMap: textureCube,
+            //envMapIntensity: 15,
+			bumpMap: whiteNoise,
+            bumpScale: 0.1,
+            metalness: 0.1,
         });
         materials.alphaLegends = new THREE.MeshStandardMaterial({
             color: materialColors.alphaLegends,
             dithering: true,
-            roughness: 0.7,
-            envMap: textureCube,
-            envMapIntensity: 15,
+            roughness: 1,
+            //envMap: textureCube,
+            //envMapIntensity: 15,
+			bumpMap: whiteNoise,
+            bumpScale: 0.1,
+            metalness: 0.1,
         });
 
         materials.modBackground = new THREE.MeshStandardMaterial({
             color: materialColors.modBackground,
             dithering: true,
-            roughness: 0.7,
-            envMap: textureCube,
-            envMapIntensity: 15,
+            roughness: 1,
+            //envMap: textureCube,
+            //envMapIntensity: 15,
+			bumpMap: whiteNoise,
+            bumpScale: 0.1,
+            metalness: 0.1,
             //wireframe: true
         });
         materials.accentBackground = new THREE.MeshStandardMaterial({
             color: materialColors.accentBackground,
             dithering: true,
-            roughness: 0.7,
-            envMap: textureCube,
-            envMapIntensity: 15,
+            roughness: 1,
+            //envMap: textureCube,
+            //envMapIntensity: 15,
+			bumpMap: whiteNoise,
+            bumpScale: 0.1,
+            metalness: 0.1,
             //wireframe: true
         });
         materials.alphaBackground = new THREE.MeshStandardMaterial({
             color: materialColors.alphaBackground,
             dithering: true,
-            roughness: 0.7,
-            envMap: textureCube,
-            envMapIntensity: 15,
+            roughness: 1,
+            //envMap: textureCube,
+            //envMapIntensity: 15,
+			bumpMap: whiteNoise,
+            bumpScale: 0.1,
+            metalness: 0.1,
             //wireframe: true
         });
 
@@ -545,15 +635,14 @@ namespace KeyboardRender {
             scene.add(gltf.scene);
         });
 
-        renderer = new THREE.WebGLRenderer({antialias: true, preserveDrawingBuffer: true});
-        //renderer.shadowMap.enabled = true;
+        renderer.shadowMap.enabled = true;
         renderer.setPixelRatio( window.devicePixelRatio );
         renderer.setSize(threeContainer.offsetWidth, threeContainer.offsetHeight);
 		
-		/*let composer = new THREE.EffectComposer( renderer );
+		let composer = new THREE.EffectComposer( renderer );
 		composer.addPass( new THREE.RenderPass( scene, camera ) );
 		let pass = new THREE.SMAAPass( window.innerWidth * renderer.getPixelRatio(), window.innerHeight * renderer.getPixelRatio() );
-		composer.addPass( pass );*/
+		composer.addPass( pass );
 				
         threeContainer.appendChild( renderer.domElement );
         window.addEventListener( 'resize', resize, false );
@@ -577,6 +666,7 @@ namespace KeyboardRender {
         //body.material = bodyMaterial;
         if(boardMap.keyboardColor.indexOf(body.name) > -1)body.material = materials.keyboardColor;
         body.receiveShadow = true;
+		body.castShadow = true;
     }
 
     function resize(): void {

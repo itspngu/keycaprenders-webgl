@@ -65,7 +65,8 @@ var KeyboardRender;
         alphaLegends: undefined,
         modBackground: undefined,
         accentBackground: undefined,
-        alphaBackground: undefined
+        alphaBackground: undefined,
+        backgroundColor: undefined
     };
     // Other Variables
     var pickerActive = false;
@@ -76,7 +77,8 @@ var KeyboardRender;
         modBackground: '',
         modLegends: '',
         accentBackground: '',
-        accentLegends: ''
+        accentLegends: '',
+        backgroundColor: ''
     };
     var materialColors = {
         alphaBackground: undefined,
@@ -85,7 +87,8 @@ var KeyboardRender;
         modBackground: undefined,
         modLegends: undefined,
         accentBackground: undefined,
-        accentLegends: undefined
+        accentLegends: undefined,
+        backgroundColor: undefined
     };
     var inputOptions = [
         { id: 'alphaBackground', type: 'colorInput', label: "Alpha Background", defaultInput: 'cc' },
@@ -94,7 +97,8 @@ var KeyboardRender;
         { id: 'modBackground', type: 'colorInput', label: 'Mod Background', defaultInput: 'n9' },
         { id: 'modLegends', type: 'colorInput', label: "Mod Legends", defaultInput: 'ws1' },
         { id: 'accentBackground', type: 'colorInput', label: "Accent Background", defaultInput: 'ro2' },
-        { id: 'accentLegends', type: 'colorInput', label: "Accent Legends", defaultInput: 'ws1' }
+        { id: 'accentLegends', type: 'colorInput', label: "Accent Legends", defaultInput: 'ws1' },
+        { id: 'backgroundColor', type: 'colorInput', label: "Background Color", defaultInput: '#ffffff' }
     ];
     var gmkColors = {
         'cr': 'rgb(5,5,5)',
@@ -233,7 +237,7 @@ var KeyboardRender;
     KeyboardRender.setColor = setColor;
     function setCamera(x, y, z) {
         camera.position.set(x, y, z);
-        camera.lookAt(scene.position);
+        camera.lookAt(0, 0, 0);
     }
     KeyboardRender.setCamera = setCamera;
     function getCamera() {
@@ -427,6 +431,7 @@ var KeyboardRender;
     }
     // THREE JS STUFF
     function threeInit() {
+        KeyboardRender.renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
         camera = new THREE.PerspectiveCamera(50, threeContainer.offsetWidth / threeContainer.offsetHeight, 0.1, 100);
         camera.position.set(-3.2, 4.6, 0);
         controls = new THREE.OrbitControls(camera, threeContainer);
@@ -435,15 +440,18 @@ var KeyboardRender;
         scene.background = new THREE.Color(0xffffff);
         //scene.add( new THREE.HemisphereLight(0xffffff) );
         scene.fog = new THREE.Fog(255, 255, 255);
-        /*let pointLight1 = new THREE.PointLight( 0xffffff, 1.0 );
-        pointLight1.position.set( -5, 5, 5);
+        var pointLight1 = new THREE.PointLight(0xffffff, 1.0);
+        pointLight1.position.set(-5, 5, 5);
         pointLight1.castShadow = true;
-        scene.add( pointLight1 );
-
-        let pointLight2 = new THREE.PointLight( 0xffffff, 0.5 );
-        pointLight2.position.set( 0, 10, 0);
+        pointLight1.shadow.mapSize.width = 1024;
+        pointLight1.shadow.mapSize.height = 1024;
+        scene.add(pointLight1);
+        var pointLight2 = new THREE.PointLight(0xffffff, 0.5);
+        pointLight2.position.set(0, 10, 0);
         pointLight2.castShadow = true;
-        scene.add( pointLight2 );*/
+        pointLight2.shadow.mapSize.width = 1024;
+        pointLight2.shadow.mapSize.height = 1024;
+        scene.add(pointLight2);
         // envmap
         var path = "assets/cube_map_1/";
         var urls = [
@@ -451,7 +459,7 @@ var KeyboardRender;
             path + "py.png", path + "ny.png",
             path + "pz.png", path + "nz.png"
         ];
-        var textureCube = new THREE.CubeTextureLoader().load(urls);
+        //let textureCube = new THREE.CubeTextureLoader().load( urls );
         //scene.background = textureCube;
         // Plane
         /*let gridColor = new THREE.Color("rgb(256,129,0)");
@@ -464,69 +472,141 @@ var KeyboardRender;
         plane2.position.x = -.01;
         scene.add(plane);
         scene.add(plane2);*/
+        var textureLoader = new THREE.TextureLoader();
+        var tableGeometry = new THREE.PlaneGeometry(50, 50);
+        /*let tableDiffuse = textureLoader.load('assets/concrete_floor/concrete_floor_02_diff.jpg');
+        
+        tableDiffuse.repeat.set(4, 4);
+        tableDiffuse.wrapS = tableDiffuse.wrapT = THREE.RepeatWrapping;
+        tableDiffuse.format = THREE.RGBFormat;
+        
+        let tableBump = textureLoader.load('assets/concrete_floor/concrete_floor_02_bump.jpg');
+        
+        tableBump.repeat.set(4, 4);
+        tableBump.wrapS = tableBump.wrapT = THREE.RepeatWrapping;
+        tableBump.format = THREE.RGBFormat;
+        
+        let tableRoughness = textureLoader.load('assets/concrete_floor/concrete_floor_02_bump.jpg');
+        
+        tableRoughness.repeat.set(4, 4);
+        tableRoughness.wrapS = tableRoughness.wrapT = THREE.RepeatWrapping;
+        tableRoughness.format = THREE.RGBFormat;
+        
+        let tableAO = textureLoader.load('assets/concrete_floor/concrete_floor_02_ao.jpg');
+        
+        tableAO.repeat.set(4, 4);
+        tableAO.wrapS = tableAO.wrapT = THREE.RepeatWrapping;
+        tableAO.format = THREE.RGBFormat;
+        
+        let tableMaterial = new THREE.MeshStandardMaterial({
+            color: 0xffffff,
+            side: THREE.DoubleSide,
+            map: tableDiffuse,
+            bumpMap: tableBump,
+            bumpScale: 0.001,
+            //roughnessMap: tableRoughness,
+            aoMap: tableAO,
+            roughness: 1,
+            metalness: 0,
+            //envMap: textureCube,
+            //envMapIntensity: 1
+        });*/
+        materials.backgroundColor = new THREE.MeshStandardMaterial({
+            color: materialColors.backgroundColor,
+            side: THREE.DoubleSide,
+            //map: tableDiffuse,
+            //bumpMap: tableBump,
+            //bumpScale: 0.001,
+            //roughnessMap: tableRoughness,
+            //aoMap: tableAO,
+            roughness: 1,
+            metalness: 0,
+            dithering: true,
+        });
+        var tablePlane = new THREE.Mesh(tableGeometry, materials.backgroundColor);
+        tablePlane.rotation.x = Math.PI / 2;
+        tablePlane.receiveShadow = true;
+        scene.add(tablePlane);
         // Smoother
         // TODO: Later
         //let subdivisions = 1;
         //let modifier = new THREE.SubdivisionModifier(subdivisions);
         // Colors and Material
-        var textureLoader = new THREE.TextureLoader();
-        var metalBump = textureLoader.load('assets/white_noise.jpg');
-        metalBump.repeat.set(2, 2);
-        metalBump.wrapS = metalBump.wrapT = THREE.RepeatWrapping;
-        metalBump.format = THREE.RGBFormat;
+        var whiteNoise = textureLoader.load('assets/white_noise.png');
+        /*whiteNoise.repeat.set(1, 1);
+        whiteNoise.wrapS = whiteNoise.wrapT = THREE.RepeatWrapping;
+        whiteNoise.format = THREE.RGBFormat;*/
         materials.keyboardColor = new THREE.MeshStandardMaterial({
             color: materialColors.keyboardColor,
             side: THREE.DoubleSide,
             dithering: true,
-            envMap: textureCube,
-            envMapIntensity: 5,
-            bumpMap: metalBump,
-            bumpScale: 12,
-            roughness: 0.45,
-            metalness: 0.95,
+            //envMap: textureCube,
+            //envMapIntensity: 5,
+            bumpMap: whiteNoise,
+            bumpScale: 0.000001,
+            metalness: 0.8,
+            roughness: 1,
         });
         // Materials
         materials.modLegends = new THREE.MeshStandardMaterial({
             color: materialColors.modLegends,
             dithering: true,
-            roughness: 0.7,
-            envMap: textureCube,
-            envMapIntensity: 15,
+            roughness: 1,
+            //envMap: textureCube,
+            //envMapIntensity: 15,
+            bumpMap: whiteNoise,
+            bumpScale: 0.1,
+            metalness: 0.1,
         });
         materials.accentLegends = new THREE.MeshStandardMaterial({
             color: materialColors.accentLegends,
             dithering: true,
-            roughness: 0.7,
-            envMap: textureCube,
-            envMapIntensity: 15,
+            roughness: 1,
+            //envMap: textureCube,
+            //envMapIntensity: 15,
+            bumpMap: whiteNoise,
+            bumpScale: 0.1,
+            metalness: 0.1,
         });
         materials.alphaLegends = new THREE.MeshStandardMaterial({
             color: materialColors.alphaLegends,
             dithering: true,
-            roughness: 0.7,
-            envMap: textureCube,
-            envMapIntensity: 15,
+            roughness: 1,
+            //envMap: textureCube,
+            //envMapIntensity: 15,
+            bumpMap: whiteNoise,
+            bumpScale: 0.1,
+            metalness: 0.1,
         });
         materials.modBackground = new THREE.MeshStandardMaterial({
             color: materialColors.modBackground,
             dithering: true,
-            roughness: 0.7,
-            envMap: textureCube,
-            envMapIntensity: 15,
+            roughness: 1,
+            //envMap: textureCube,
+            //envMapIntensity: 15,
+            bumpMap: whiteNoise,
+            bumpScale: 0.1,
+            metalness: 0.1,
         });
         materials.accentBackground = new THREE.MeshStandardMaterial({
             color: materialColors.accentBackground,
             dithering: true,
-            roughness: 0.7,
-            envMap: textureCube,
-            envMapIntensity: 15,
+            roughness: 1,
+            //envMap: textureCube,
+            //envMapIntensity: 15,
+            bumpMap: whiteNoise,
+            bumpScale: 0.1,
+            metalness: 0.1,
         });
         materials.alphaBackground = new THREE.MeshStandardMaterial({
             color: materialColors.alphaBackground,
             dithering: true,
-            roughness: 0.7,
-            envMap: textureCube,
-            envMapIntensity: 15,
+            roughness: 1,
+            //envMap: textureCube,
+            //envMapIntensity: 15,
+            bumpMap: whiteNoise,
+            bumpScale: 0.1,
+            metalness: 0.1,
         });
         var loader = new THREE.GLTFLoader();
         loader.setDRACOLoader(new THREE.DRACOLoader());
@@ -555,14 +635,13 @@ var KeyboardRender;
             gltf.scene.position.x = 2;
             scene.add(gltf.scene);
         });
-        KeyboardRender.renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
-        //renderer.shadowMap.enabled = true;
+        KeyboardRender.renderer.shadowMap.enabled = true;
         KeyboardRender.renderer.setPixelRatio(window.devicePixelRatio);
         KeyboardRender.renderer.setSize(threeContainer.offsetWidth, threeContainer.offsetHeight);
-        /*let composer = new THREE.EffectComposer( renderer );
-        composer.addPass( new THREE.RenderPass( scene, camera ) );
-        let pass = new THREE.SMAAPass( window.innerWidth * renderer.getPixelRatio(), window.innerHeight * renderer.getPixelRatio() );
-        composer.addPass( pass );*/
+        var composer = new THREE.EffectComposer(KeyboardRender.renderer);
+        composer.addPass(new THREE.RenderPass(scene, camera));
+        var pass = new THREE.SMAAPass(window.innerWidth * KeyboardRender.renderer.getPixelRatio(), window.innerHeight * KeyboardRender.renderer.getPixelRatio());
+        composer.addPass(pass);
         threeContainer.appendChild(KeyboardRender.renderer.domElement);
         window.addEventListener('resize', resize, false);
     }
@@ -589,6 +668,7 @@ var KeyboardRender;
         if (boardMap.keyboardColor.indexOf(body.name) > -1)
             body.material = materials.keyboardColor;
         body.receiveShadow = true;
+        body.castShadow = true;
     }
     function resize() {
         camera.aspect = threeContainer.offsetWidth / threeContainer.offsetHeight;
