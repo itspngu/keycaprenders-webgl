@@ -37,18 +37,20 @@ var KeyboardRender;
 (function (KeyboardRender) {
     // Required JS
     var loadPkg = [
-        'three/controls/OrbitControls.js',
-        'three/loaders/GLTFLoader.js',
-        'three/loaders/DRACOLoader.js',
-        'three/pmrem/PMREMGenerator.js',
-        'three/pmrem/PMREMCubeUVPacker.js',
-        'three/modifiers/SubdivisionModifier.js',
         'three/js/shaders/CopyShader.js',
         'three/js/shaders/SMAAShader.js',
         'three/js/postprocessing/EffectComposer.js',
         'three/js/postprocessing/SMAAPass.js',
         'three/js/postprocessing/RenderPass.js',
         'three/js/postprocessing/ShaderPass.js',
+        'three/controls/OrbitControls.js',
+        'three/loaders/GLTFLoader.js',
+        'three/loaders/DRACOLoader.js',
+        'three/pmrem/PMREMGenerator.js',
+        'three/pmrem/PMREMCubeUVPacker.js',
+        'three/modifiers/SubdivisionModifier.js',
+        'three/js/shaders/BokehShader.js',
+        'three/js/postprocessing/BokehPass.js',
     ];
     // DOM
     var appWrapper;
@@ -235,15 +237,6 @@ var KeyboardRender;
         return false;
     }
     KeyboardRender.setColor = setColor;
-    function setCamera(x, y, z) {
-        camera.position.set(x, y, z);
-        camera.lookAt(0, 0, 0);
-    }
-    KeyboardRender.setCamera = setCamera;
-    function getCamera() {
-        return [camera.position.x, camera.position.y, camera.position.z];
-    }
-    KeyboardRender.getCamera = getCamera;
     function hideUI() {
         optionWrapper.style.display = "none";
     }
@@ -432,10 +425,14 @@ var KeyboardRender;
     // THREE JS STUFF
     function threeInit() {
         KeyboardRender.renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+        KeyboardRender.renderer.physicallyCorrectLights = true;
         camera = new THREE.PerspectiveCamera(50, threeContainer.offsetWidth / threeContainer.offsetHeight, 0.1, 100);
         camera.position.set(-3.2, 4.6, 0);
         controls = new THREE.OrbitControls(camera, threeContainer);
-        controls.screenSpacePanning = true;
+        controls.maxPolarAngle = Math.PI / 2;
+        controls.enableDamping = true;
+        controls.panSpeed = 0.2;
+        controls.rotateSpeed = 0.2;
         scene = new THREE.Scene();
         scene.background = new THREE.Color(0xffffff);
         //scene.add( new THREE.HemisphereLight(0xffffff) );
@@ -443,14 +440,20 @@ var KeyboardRender;
         var pointLight1 = new THREE.PointLight(0xffffff, 1.0);
         pointLight1.position.set(-5, 5, 5);
         pointLight1.castShadow = true;
-        pointLight1.shadow.mapSize.width = 1024;
-        pointLight1.shadow.mapSize.height = 1024;
+        pointLight1.shadow.mapSize.width = 2048;
+        pointLight1.shadow.mapSize.height = 2048;
+        pointLight1.power = 2000;
+        pointLight1.decay = 2;
+        pointLight1.distance = Infinity;
         scene.add(pointLight1);
         var pointLight2 = new THREE.PointLight(0xffffff, 0.5);
         pointLight2.position.set(0, 10, 0);
         pointLight2.castShadow = true;
-        pointLight2.shadow.mapSize.width = 1024;
-        pointLight2.shadow.mapSize.height = 1024;
+        pointLight2.shadow.mapSize.width = 2048;
+        pointLight2.shadow.mapSize.height = 2048;
+        pointLight2.power = 2000;
+        pointLight2.decay = 2;
+        pointLight2.distance = Infinity;
         scene.add(pointLight2);
         // envmap
         var path = "assets/cube_map_1/";
@@ -478,15 +481,12 @@ var KeyboardRender;
         
         tableDiffuse.repeat.set(4, 4);
         tableDiffuse.wrapS = tableDiffuse.wrapT = THREE.RepeatWrapping;
-        tableDiffuse.format = THREE.RGBFormat;
-        
-        let tableBump = textureLoader.load('assets/concrete_floor/concrete_floor_02_bump.jpg');
-        
-        tableBump.repeat.set(4, 4);
+        tableDiffuse.format = THREE.RGBFormat;*/
+        var tableBump = textureLoader.load('assets/white_noise.png');
+        tableBump.repeat.set(40, 40);
         tableBump.wrapS = tableBump.wrapT = THREE.RepeatWrapping;
         tableBump.format = THREE.RGBFormat;
-        
-        let tableRoughness = textureLoader.load('assets/concrete_floor/concrete_floor_02_bump.jpg');
+        /*let tableRoughness = textureLoader.load('assets/concrete_floor/concrete_floor_02_bump.jpg');
         
         tableRoughness.repeat.set(4, 4);
         tableRoughness.wrapS = tableRoughness.wrapT = THREE.RepeatWrapping;
@@ -515,8 +515,8 @@ var KeyboardRender;
             color: materialColors.backgroundColor,
             side: THREE.DoubleSide,
             //map: tableDiffuse,
-            //bumpMap: tableBump,
-            //bumpScale: 0.001,
+            bumpMap: tableBump,
+            bumpScale: 0.005,
             //roughnessMap: tableRoughness,
             //aoMap: tableAO,
             roughness: 1,
@@ -533,19 +533,21 @@ var KeyboardRender;
         //let modifier = new THREE.SubdivisionModifier(subdivisions);
         // Colors and Material
         var whiteNoise = textureLoader.load('assets/white_noise.png');
-        /*whiteNoise.repeat.set(1, 1);
+        whiteNoise.repeat.set(1, 1);
+        whiteNoise.flipY = false;
         whiteNoise.wrapS = whiteNoise.wrapT = THREE.RepeatWrapping;
-        whiteNoise.format = THREE.RGBFormat;*/
+        whiteNoise.format = THREE.sRGBFormat;
+        whiteNoise.encoding = THREE.sRGBEncoding;
         materials.keyboardColor = new THREE.MeshStandardMaterial({
             color: materialColors.keyboardColor,
             side: THREE.DoubleSide,
             dithering: true,
             //envMap: textureCube,
             //envMapIntensity: 5,
-            bumpMap: whiteNoise,
-            bumpScale: 0.000001,
+            //bumpMap: whiteNoise,
+            //bumpScale: 0.000000001,
             metalness: 0.8,
-            roughness: 1,
+            roughness: 0.95,
         });
         // Materials
         materials.modLegends = new THREE.MeshStandardMaterial({
@@ -636,12 +638,23 @@ var KeyboardRender;
             scene.add(gltf.scene);
         });
         KeyboardRender.renderer.shadowMap.enabled = true;
+        //renderer.shadowMap.autoUpdate = false;
+        KeyboardRender.renderer.shadowMap.soft = true;
         KeyboardRender.renderer.setPixelRatio(window.devicePixelRatio);
         KeyboardRender.renderer.setSize(threeContainer.offsetWidth, threeContainer.offsetHeight);
         var composer = new THREE.EffectComposer(KeyboardRender.renderer);
         composer.addPass(new THREE.RenderPass(scene, camera));
-        var pass = new THREE.SMAAPass(window.innerWidth * KeyboardRender.renderer.getPixelRatio(), window.innerHeight * KeyboardRender.renderer.getPixelRatio());
-        composer.addPass(pass);
+        var smaa_pass = new THREE.SMAAPass(window.innerWidth * KeyboardRender.renderer.getPixelRatio(), window.innerHeight * KeyboardRender.renderer.getPixelRatio());
+        composer.addPass(smaa_pass);
+        /*let bokeh_pass = new THREE.BokehPass(scene, camera, {
+            focus: 300,
+            aperture: 20,
+            maxblur: 1.0,
+            width: window.innerWidth,
+            height: window.innerHeight
+            });
+            
+        composer.addPass(bokeh_pass);*/
         threeContainer.appendChild(KeyboardRender.renderer.domElement);
         window.addEventListener('resize', resize, false);
     }

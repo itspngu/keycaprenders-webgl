@@ -2,18 +2,20 @@ declare var THREE: any;
 namespace KeyboardRender {
     // Required JS
     var loadPkg = [
-        'three/controls/OrbitControls.js',
-        'three/loaders/GLTFLoader.js',
-        'three/loaders/DRACOLoader.js',
-        'three/pmrem/PMREMGenerator.js',
-        'three/pmrem/PMREMCubeUVPacker.js',
-        'three/modifiers/SubdivisionModifier.js',
 		'three/js/shaders/CopyShader.js',
 		'three/js/shaders/SMAAShader.js',
 		'three/js/postprocessing/EffectComposer.js',
 		'three/js/postprocessing/SMAAPass.js',
 		'three/js/postprocessing/RenderPass.js',
 		'three/js/postprocessing/ShaderPass.js',
+        'three/controls/OrbitControls.js',
+        'three/loaders/GLTFLoader.js',
+        'three/loaders/DRACOLoader.js',
+        'three/pmrem/PMREMGenerator.js',
+        'three/pmrem/PMREMCubeUVPacker.js',
+        'three/modifiers/SubdivisionModifier.js',
+		'three/js/shaders/BokehShader.js',
+		'three/js/postprocessing/BokehPass.js',
     ];
 
     // DOM
@@ -208,15 +210,6 @@ namespace KeyboardRender {
         } else console.error(`ERROR: "${opt}" is not a property of setOpts.`);
         return false;
     }
-	
-	export function setCamera(x, y, z): void {
-		camera.position.set(x, y, z);
-		camera.lookAt(0, 0, 0);
-	}
-	
-	export function getCamera(): number[] {
-		return [camera.position.x, camera.position.y, camera.position.z];
-	}
 
     export function hideUI(): void {
         optionWrapper.style.display = "none";
@@ -408,11 +401,15 @@ namespace KeyboardRender {
     // THREE JS STUFF
     function threeInit(): void {
 		renderer = new THREE.WebGLRenderer({antialias: true, preserveDrawingBuffer: true});
+		renderer.physicallyCorrectLights = true;
 	
         camera = new THREE.PerspectiveCamera( 50, threeContainer.offsetWidth / threeContainer.offsetHeight, 0.1, 100 );
         camera.position.set(-3.2, 4.6, 0);
         controls = new THREE.OrbitControls( camera, threeContainer );
-		controls.screenSpacePanning = true;
+		controls.maxPolarAngle = Math.PI / 2;
+		controls.enableDamping = true;
+		controls.panSpeed = 0.2;
+		controls.rotateSpeed = 0.2;
         scene = new THREE.Scene();
         scene.background = new THREE.Color( 0xffffff );
         //scene.add( new THREE.HemisphereLight(0xffffff) );
@@ -422,15 +419,21 @@ namespace KeyboardRender {
         let pointLight1 = new THREE.PointLight( 0xffffff, 1.0 );
         pointLight1.position.set( -5, 5, 5);
         pointLight1.castShadow = true;
-		pointLight1.shadow.mapSize.width = 1024;
-		pointLight1.shadow.mapSize.height = 1024;
+		pointLight1.shadow.mapSize.width = 2048;
+		pointLight1.shadow.mapSize.height = 2048;
+		pointLight1.power = 2000;
+		pointLight1.decay = 2;
+		pointLight1.distance = Infinity;
         scene.add( pointLight1 );
 
         let pointLight2 = new THREE.PointLight( 0xffffff, 0.5 );
         pointLight2.position.set( 0, 10, 0);
         pointLight2.castShadow = true;
-		pointLight2.shadow.mapSize.width = 1024;
-		pointLight2.shadow.mapSize.height = 1024;
+		pointLight2.shadow.mapSize.width = 2048;
+		pointLight2.shadow.mapSize.height = 2048;
+		pointLight2.power = 2000;
+		pointLight2.decay = 2;
+		pointLight2.distance = Infinity;
         scene.add( pointLight2 );
 
         // envmap
@@ -463,15 +466,15 @@ namespace KeyboardRender {
 		
 		tableDiffuse.repeat.set(4, 4);
 		tableDiffuse.wrapS = tableDiffuse.wrapT = THREE.RepeatWrapping;
-		tableDiffuse.format = THREE.RGBFormat;
+		tableDiffuse.format = THREE.RGBFormat;*/
 		
-		let tableBump = textureLoader.load('assets/concrete_floor/concrete_floor_02_bump.jpg');
+		let tableBump = textureLoader.load('assets/white_noise.png');
 		
-		tableBump.repeat.set(4, 4);
+		tableBump.repeat.set(40, 40);
 		tableBump.wrapS = tableBump.wrapT = THREE.RepeatWrapping;
 		tableBump.format = THREE.RGBFormat;
 		
-		let tableRoughness = textureLoader.load('assets/concrete_floor/concrete_floor_02_bump.jpg');
+		/*let tableRoughness = textureLoader.load('assets/concrete_floor/concrete_floor_02_bump.jpg');
 		
 		tableRoughness.repeat.set(4, 4);
 		tableRoughness.wrapS = tableRoughness.wrapT = THREE.RepeatWrapping;
@@ -501,8 +504,8 @@ namespace KeyboardRender {
 			color: materialColors.backgroundColor, 
 			side: THREE.DoubleSide,
 			//map: tableDiffuse,
-			//bumpMap: tableBump,
-			//bumpScale: 0.001,
+			bumpMap: tableBump,
+			bumpScale: 0.005,
 			//roughnessMap: tableRoughness,
 			//aoMap: tableAO,
 			roughness: 1,
@@ -524,9 +527,11 @@ namespace KeyboardRender {
 
         // Colors and Material
         let whiteNoise = textureLoader.load('assets/white_noise.png');
-		/*whiteNoise.repeat.set(1, 1);
+		whiteNoise.repeat.set(1, 1);
+		whiteNoise.flipY = false;
 		whiteNoise.wrapS = whiteNoise.wrapT = THREE.RepeatWrapping;
-		whiteNoise.format = THREE.RGBFormat;*/
+		whiteNoise.format = THREE.sRGBFormat;
+		whiteNoise.encoding = THREE.sRGBEncoding;
 
         materials.keyboardColor = new THREE.MeshStandardMaterial({
             color: materialColors.keyboardColor,
@@ -534,10 +539,10 @@ namespace KeyboardRender {
             dithering: true,
             //envMap: textureCube,
 			//envMapIntensity: 5,
-            bumpMap: whiteNoise,
-            bumpScale: 0.000001,
+            //bumpMap: whiteNoise,
+            //bumpScale: 0.000000001,
             metalness: 0.8,
-			roughness: 1,
+			roughness: 0.95,
 			//roughnessMap: whiteNoise
             //emissive: 0xffffff,
             //emissiveIntensity: 0.01
@@ -636,13 +641,25 @@ namespace KeyboardRender {
         });
 
         renderer.shadowMap.enabled = true;
+		//renderer.shadowMap.autoUpdate = false;
+		renderer.shadowMap.soft = true;
         renderer.setPixelRatio( window.devicePixelRatio );
         renderer.setSize(threeContainer.offsetWidth, threeContainer.offsetHeight);
 		
-		/*let composer = new THREE.EffectComposer( renderer );
+		let composer = new THREE.EffectComposer( renderer );
 		composer.addPass( new THREE.RenderPass( scene, camera ) );
-		let pass = new THREE.SMAAPass( window.innerWidth * renderer.getPixelRatio(), window.innerHeight * renderer.getPixelRatio() );
-		composer.addPass( pass );*/
+		let smaa_pass = new THREE.SMAAPass( window.innerWidth * renderer.getPixelRatio(), window.innerHeight * renderer.getPixelRatio() );
+		composer.addPass( smaa_pass );
+		
+		/*let bokeh_pass = new THREE.BokehPass(scene, camera, {
+			focus: 300,
+			aperture: 20,
+			maxblur: 1.0,
+			width: window.innerWidth,
+			height: window.innerHeight
+			});
+			
+		composer.addPass(bokeh_pass);*/
 				
         threeContainer.appendChild( renderer.domElement );
         window.addEventListener( 'resize', resize, false );
