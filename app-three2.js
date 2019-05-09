@@ -521,10 +521,10 @@ var KeyboardRender;
             //roughnessMap: tableRoughness,
             //aoMap: tableAO,
             roughness: 1,
-            metalness: 0,
+            metalness: 1,
             dithering: true,
             envMap: textureCube,
-            envMapIntensity: 300
+            envMapIntensity: 12
         });
         var tablePlane = new THREE.Mesh(tableGeometry, materials.backgroundColor);
         tablePlane.rotation.x = Math.PI / 2;

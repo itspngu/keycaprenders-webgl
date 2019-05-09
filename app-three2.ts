@@ -509,10 +509,10 @@ namespace KeyboardRender {
 			//roughnessMap: tableRoughness,
 			//aoMap: tableAO,
 			roughness: 1,
-			metalness: 0,
+			metalness: 1,
 			dithering: true,
 			envMap: textureCube,
-			envMapIntensity: 300
+			envMapIntensity: 12
 		});
 		
 		let tablePlane = new THREE.Mesh( tableGeometry, materials.backgroundColor );
