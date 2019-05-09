@@ -437,24 +437,25 @@ var KeyboardRender;
         scene.background = new THREE.Color(0xffffff);
         //scene.add( new THREE.HemisphereLight(0xffffff) );
         scene.fog = new THREE.Fog(255, 255, 255);
-        var pointLight1 = new THREE.PointLight(0xffffff, 1.0);
-        pointLight1.position.set(-5, 5, 5);
+        /*let pointLight1 = new THREE.PointLight( 0xffffff, 1.0 );
+        pointLight1.position.set( -5, 5, 5);
         pointLight1.castShadow = true;
         pointLight1.shadow.mapSize.width = 2048;
         pointLight1.shadow.mapSize.height = 2048;
         pointLight1.power = 2000;
         pointLight1.decay = 2;
         pointLight1.distance = Infinity;
-        scene.add(pointLight1);
-        var pointLight2 = new THREE.PointLight(0xffffff, 0.5);
-        pointLight2.position.set(0, 10, 0);
+        scene.add( pointLight1 );
+
+        let pointLight2 = new THREE.PointLight( 0xffffff, 0.5 );
+        pointLight2.position.set( 0, 10, 0);
         pointLight2.castShadow = true;
         pointLight2.shadow.mapSize.width = 2048;
         pointLight2.shadow.mapSize.height = 2048;
         pointLight2.power = 2000;
         pointLight2.decay = 2;
         pointLight2.distance = Infinity;
-        scene.add(pointLight2);
+        scene.add( pointLight2 );*/
         // envmap
         var path = "assets/cube_map_1/";
         var urls = [
@@ -462,7 +463,7 @@ var KeyboardRender;
             path + "py.png", path + "ny.png",
             path + "pz.png", path + "nz.png"
         ];
-        //let textureCube = new THREE.CubeTextureLoader().load( urls );
+        var textureCube = new THREE.CubeTextureLoader().load(urls);
         //scene.background = textureCube;
         // Plane
         /*let gridColor = new THREE.Color("rgb(256,129,0)");
@@ -522,6 +523,8 @@ var KeyboardRender;
             roughness: 1,
             metalness: 0,
             dithering: true,
+            envMap: textureCube,
+            envMapIntensity: 300
         });
         var tablePlane = new THREE.Mesh(tableGeometry, materials.backgroundColor);
         tablePlane.rotation.x = Math.PI / 2;
@@ -542,73 +545,73 @@ var KeyboardRender;
             color: materialColors.keyboardColor,
             side: THREE.DoubleSide,
             dithering: true,
-            //envMap: textureCube,
-            //envMapIntensity: 5,
+            envMap: textureCube,
+            envMapIntensity: 12,
             //bumpMap: whiteNoise,
             //bumpScale: 0.000000001,
-            metalness: 0.8,
-            roughness: 0.95,
+            metalness: 1,
+            roughness: 0.9,
         });
         // Materials
         materials.modLegends = new THREE.MeshStandardMaterial({
             color: materialColors.modLegends,
             dithering: true,
             roughness: 1,
-            //envMap: textureCube,
-            //envMapIntensity: 15,
+            envMap: textureCube,
+            envMapIntensity: 8,
             bumpMap: whiteNoise,
             bumpScale: 0.1,
-            metalness: 0.1,
+            metalness: 1,
         });
         materials.accentLegends = new THREE.MeshStandardMaterial({
             color: materialColors.accentLegends,
             dithering: true,
             roughness: 1,
-            //envMap: textureCube,
-            //envMapIntensity: 15,
+            envMap: textureCube,
+            envMapIntensity: 8,
             bumpMap: whiteNoise,
             bumpScale: 0.1,
-            metalness: 0.1,
+            metalness: 1,
         });
         materials.alphaLegends = new THREE.MeshStandardMaterial({
             color: materialColors.alphaLegends,
             dithering: true,
             roughness: 1,
-            //envMap: textureCube,
-            //envMapIntensity: 15,
+            envMap: textureCube,
+            envMapIntensity: 8,
             bumpMap: whiteNoise,
             bumpScale: 0.1,
-            metalness: 0.1,
+            metalness: 1,
         });
         materials.modBackground = new THREE.MeshStandardMaterial({
             color: materialColors.modBackground,
             dithering: true,
             roughness: 1,
-            //envMap: textureCube,
-            //envMapIntensity: 15,
+            envMap: textureCube,
+            envMapIntensity: 8,
             bumpMap: whiteNoise,
             bumpScale: 0.1,
-            metalness: 0.1,
+            metalness: 1,
         });
         materials.accentBackground = new THREE.MeshStandardMaterial({
             color: materialColors.accentBackground,
             dithering: true,
             roughness: 1,
-            //envMap: textureCube,
-            //envMapIntensity: 15,
+            envMap: textureCube,
+            envMapIntensity: 8,
             bumpMap: whiteNoise,
             bumpScale: 0.1,
-            metalness: 0.1,
+            metalness: 1,
         });
         materials.alphaBackground = new THREE.MeshStandardMaterial({
             color: materialColors.alphaBackground,
             dithering: true,
             roughness: 1,
-            //envMap: textureCube,
-            //envMapIntensity: 15,
+            envMap: textureCube,
+            envMapIntensity: 8,
             bumpMap: whiteNoise,
             bumpScale: 0.1,
-            metalness: 0.1,
+            metalness: 1,
         });
         var loader = new THREE.GLTFLoader();
         loader.setDRACOLoader(new THREE.DRACOLoader());

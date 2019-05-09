@@ -416,7 +416,7 @@ namespace KeyboardRender {
         scene.fog = new THREE.Fog(255, 255, 255);
 
 
-        let pointLight1 = new THREE.PointLight( 0xffffff, 1.0 );
+        /*let pointLight1 = new THREE.PointLight( 0xffffff, 1.0 );
         pointLight1.position.set( -5, 5, 5);
         pointLight1.castShadow = true;
 		pointLight1.shadow.mapSize.width = 2048;
@@ -434,7 +434,7 @@ namespace KeyboardRender {
 		pointLight2.power = 2000;
 		pointLight2.decay = 2;
 		pointLight2.distance = Infinity;
-        scene.add( pointLight2 );
+        scene.add( pointLight2 );*/
 
         // envmap
         let path = "assets/cube_map_1/";
@@ -443,7 +443,7 @@ namespace KeyboardRender {
             path + "py.png", path + "ny.png",
             path + "pz.png", path + "nz.png"
         ];
-        //let textureCube = new THREE.CubeTextureLoader().load( urls );
+        let textureCube = new THREE.CubeTextureLoader().load( urls );
 		//scene.background = textureCube;
 
         // Plane
@@ -511,8 +511,8 @@ namespace KeyboardRender {
 			roughness: 1,
 			metalness: 0,
 			dithering: true,
-			//envMap: textureCube,
-			//envMapIntensity: 1
+			envMap: textureCube,
+			envMapIntensity: 300
 		});
 		
 		let tablePlane = new THREE.Mesh( tableGeometry, materials.backgroundColor );
@@ -537,12 +537,12 @@ namespace KeyboardRender {
             color: materialColors.keyboardColor,
             side: THREE.DoubleSide,
             dithering: true,
-            //envMap: textureCube,
-			//envMapIntensity: 5,
+            envMap: textureCube,
+			envMapIntensity: 12,
             //bumpMap: whiteNoise,
             //bumpScale: 0.000000001,
-            metalness: 0.8,
-			roughness: 0.95,
+            metalness: 1,
+			roughness: 0.9,
 			//roughnessMap: whiteNoise
             //emissive: 0xffffff,
             //emissiveIntensity: 0.01
@@ -553,64 +553,64 @@ namespace KeyboardRender {
             color: materialColors.modLegends,
             dithering: true,
             roughness: 1,
-            //envMap: textureCube,
-            //envMapIntensity: 15,
+            envMap: textureCube,
+            envMapIntensity: 8,
 			bumpMap: whiteNoise,
             bumpScale: 0.1,
-            metalness: 0.1,
+            metalness: 1,
         });
         materials.accentLegends = new THREE.MeshStandardMaterial({
             color: materialColors.accentLegends,
             dithering: true,
             roughness: 1,
-            //envMap: textureCube,
-            //envMapIntensity: 15,
+            envMap: textureCube,
+            envMapIntensity: 8,
 			bumpMap: whiteNoise,
             bumpScale: 0.1,
-            metalness: 0.1,
+            metalness: 1,
         });
         materials.alphaLegends = new THREE.MeshStandardMaterial({
             color: materialColors.alphaLegends,
             dithering: true,
             roughness: 1,
-            //envMap: textureCube,
-            //envMapIntensity: 15,
+            envMap: textureCube,
+            envMapIntensity: 8,
 			bumpMap: whiteNoise,
             bumpScale: 0.1,
-            metalness: 0.1,
+            metalness: 1,
         });
 
         materials.modBackground = new THREE.MeshStandardMaterial({
             color: materialColors.modBackground,
             dithering: true,
             roughness: 1,
-            //envMap: textureCube,
-            //envMapIntensity: 15,
+            envMap: textureCube,
+            envMapIntensity: 8,
 			bumpMap: whiteNoise,
             bumpScale: 0.1,
-            metalness: 0.1,
+            metalness: 1,
             //wireframe: true
         });
         materials.accentBackground = new THREE.MeshStandardMaterial({
             color: materialColors.accentBackground,
             dithering: true,
             roughness: 1,
-            //envMap: textureCube,
-            //envMapIntensity: 15,
+            envMap: textureCube,
+            envMapIntensity: 8,
 			bumpMap: whiteNoise,
             bumpScale: 0.1,
-            metalness: 0.1,
+            metalness: 1,
             //wireframe: true
         });
         materials.alphaBackground = new THREE.MeshStandardMaterial({
             color: materialColors.alphaBackground,
             dithering: true,
             roughness: 1,
-            //envMap: textureCube,
-            //envMapIntensity: 15,
+            envMap: textureCube,
+            envMapIntensity: 8,
 			bumpMap: whiteNoise,
             bumpScale: 0.1,
-            metalness: 0.1,
+            metalness: 1,
             //wireframe: true
         });
 
