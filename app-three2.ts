@@ -72,7 +72,7 @@ namespace KeyboardRender {
         { id: 'keyboardColor', type: 'colorInput', label: 'Keyboard Color', defaultInput: '#3b3b3b' },
         { id: 'modBackground', type: 'colorInput', label: 'Mod Background', defaultInput: 'n9' },
         { id: 'modLegends', type: 'colorInput', label: "Mod Legends", defaultInput: 'ws1' },
-        { id: 'accentBackground', type: 'colorInput', label: "Accent Background", defaultInput: 'ro2'},
+        { id: 'accentBackground', type: 'colorInput', label: "Accent Background", defaultInput: '#691F28'},
         { id: 'accentLegends', type: 'colorInput', label: "Accent Legends", defaultInput: 'ws1' },
 		{ id: 'backgroundColor', type: 'colorInput', label: "Background Color", defaultInput: '#ffffff' }
     ];
