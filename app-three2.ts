@@ -38,7 +38,8 @@ namespace KeyboardRender {
         modBackground: undefined,
         accentBackground: undefined,
         alphaBackground: undefined,
-		backgroundColor: undefined
+		backgroundColor: undefined,
+		PCBColor: undefined
     };
 
     // Other Variables
@@ -409,13 +410,14 @@ namespace KeyboardRender {
 		renderer.shadowMap.soft = true;
 	
         camera = new THREE.PerspectiveCamera( 50, threeContainer.offsetWidth / threeContainer.offsetHeight, 0.1, 100 );
-        camera.position.set(-3.2, 4.6, 0);
+        camera.position.set(-10, 15, 0.5);
         controls = new THREE.OrbitControls( camera, threeContainer );
 		controls.maxPolarAngle = Math.PI / 2;
 		controls.enableDamping = true;
 		controls.panSpeed = 0.2;
 		controls.rotateSpeed = 0.2;
         scene = new THREE.Scene();
+		camera.lookAt(scene);
         scene.background = new THREE.Color( 0xffffff );
         //scene.add( new THREE.HemisphereLight(0xffffff) );
         scene.fog = new THREE.Fog(255, 255, 255);
@@ -537,15 +539,25 @@ namespace KeyboardRender {
 		//whiteNoise.wrapS = whiteNoise.wrapT = THREE.RepeatWrapping;
 		whiteNoise.format = THREE.sRGBFormat;
 		whiteNoise.encoding = THREE.sRGBEncoding;
+		
+		materials.PCBColor = new THREE.MeshStandardMaterial({
+			color: 0x000000,
+            side: THREE.DoubleSide,
+            dithering: true,
+            envMap: textureCube,
+			envMapIntensity: 10,
+            metalness: 1,
+			roughness: 0.9,
+		});
 
         materials.keyboardColor = new THREE.MeshStandardMaterial({
             color: materialColors.keyboardColor,
             side: THREE.DoubleSide,
             dithering: true,
             envMap: textureCube,
-			envMapIntensity: 80,
-            normalMap: whiteNoise,
-            bumpScale: 1,
+			envMapIntensity: 8,
+            //bumpMap: whiteNoise,
+            //bumpScale: 1,
             metalness: 1,
 			roughness: 0.9,
 			//roughnessMap: whiteNoise
@@ -553,7 +565,10 @@ namespace KeyboardRender {
             //emissiveIntensity: 0.01
         });
 		
-		materials.keyboardColor.flipY = false;
+		materials.keyboardColor.format = THREE.sRGBFormat;
+		materials.keyboardColor.encoding = THREE.sRGBEncoding;
+		
+		//materials.keyboardColor.flipY = false;
 
         // Materials
         materials.modLegends = new THREE.MeshStandardMaterial({
@@ -630,7 +645,7 @@ namespace KeyboardRender {
 		
         loader.load('assets/idb60_wkl_3_draco.gltf', (gltf)=>{
             gltf.scene.children.forEach((child)=>{
-				console.log(child.name);
+				//console.log(child.name);
                 if(child.type == "Group"){
                     // Set Key Cap
                     //setKeyCap(child.children[0]);
@@ -640,12 +655,15 @@ namespace KeyboardRender {
 					
 				}
 				else if(child.type == "Mesh") {
-					console.log(child);
+					//console.log(child);
 					if(child.name == "bottom1" || child.name == "top_wkl1"){
 						// Body Pieces
 						setBody(child);
+					} else if (child.name == 'COMPOUND1') {
+						// PCB
+						child.material = materials.PCBColor;
 					} else {
-						// spacebar :(
+						// spacebar & switches :(
 						child.material = materials.alphaBackground;
 					}
 				}
@@ -688,7 +706,7 @@ namespace KeyboardRender {
 	
 	function applyKeycapMaterial(obj): void {
 	
-		console.log(obj.name);
+		//console.log(obj.name);
 		
 		if (obj.children[0].material.name.indexOf('alpha_background') > -1) obj.children[0].material = materials.alphaBackground;
 		else if (obj.children[0].material.name.indexOf('alpha_legends') > -1) obj.children[0].material = materials.alphaLegends;
