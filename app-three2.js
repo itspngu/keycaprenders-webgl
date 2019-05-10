@@ -95,7 +95,7 @@ var KeyboardRender;
     var inputOptions = [
         { id: 'alphaBackground', type: 'colorInput', label: "Alpha Background", defaultInput: 'cc' },
         { id: 'alphaLegends', type: 'colorInput', label: "Alpha Legends", defaultInput: 'ws1' },
-        { id: 'keyboardColor', type: 'colorInput', label: 'Keyboard Color', defaultInput: '#3b3b3b' },
+        { id: 'keyboardColor', type: 'colorInput', label: 'Keyboard Color', defaultInput: '#E7E7E7' },
         { id: 'modBackground', type: 'colorInput', label: 'Mod Background', defaultInput: 'n9' },
         { id: 'modLegends', type: 'colorInput', label: "Mod Legends", defaultInput: 'ws1' },
         { id: 'accentBackground', type: 'colorInput', label: "Accent Background", defaultInput: '#691F28' },
@@ -426,6 +426,11 @@ var KeyboardRender;
     function threeInit() {
         KeyboardRender.renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
         KeyboardRender.renderer.physicallyCorrectLights = true;
+        KeyboardRender.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        KeyboardRender.renderer.shadowMap.enabled = true;
+        //renderer.gammaOutput = true;
+        //renderer.shadowMap.autoUpdate = false;
+        KeyboardRender.renderer.shadowMap.soft = true;
         camera = new THREE.PerspectiveCamera(50, threeContainer.offsetWidth / threeContainer.offsetHeight, 0.1, 100);
         camera.position.set(-3.2, 4.6, 0);
         controls = new THREE.OrbitControls(camera, threeContainer);
@@ -437,17 +442,16 @@ var KeyboardRender;
         scene.background = new THREE.Color(0xffffff);
         //scene.add( new THREE.HemisphereLight(0xffffff) );
         scene.fog = new THREE.Fog(255, 255, 255);
-        /*let pointLight1 = new THREE.PointLight( 0xffffff, 1.0 );
-        pointLight1.position.set( -5, 5, 5);
+        var pointLight1 = new THREE.PointLight(0xffffff, 1.0);
+        pointLight1.position.set(-5, 5, 5);
         pointLight1.castShadow = true;
-        pointLight1.shadow.mapSize.width = 2048;
-        pointLight1.shadow.mapSize.height = 2048;
-        pointLight1.power = 2000;
+        pointLight1.shadow.mapSize.width = 1024;
+        pointLight1.shadow.mapSize.height = 1024;
+        pointLight1.power = 1000;
         pointLight1.decay = 2;
         pointLight1.distance = Infinity;
-        scene.add( pointLight1 );
-
-        let pointLight2 = new THREE.PointLight( 0xffffff, 0.5 );
+        scene.add(pointLight1);
+        /*let pointLight2 = new THREE.PointLight( 0xffffff, 0.5 );
         pointLight2.position.set( 0, 10, 0);
         pointLight2.castShadow = true;
         pointLight2.shadow.mapSize.width = 2048;
@@ -524,7 +528,7 @@ var KeyboardRender;
             metalness: 1,
             dithering: true,
             envMap: textureCube,
-            envMapIntensity: 12
+            envMapIntensity: 10
         });
         var tablePlane = new THREE.Mesh(tableGeometry, materials.backgroundColor);
         tablePlane.rotation.x = Math.PI / 2;
@@ -536,9 +540,9 @@ var KeyboardRender;
         //let modifier = new THREE.SubdivisionModifier(subdivisions);
         // Colors and Material
         var whiteNoise = textureLoader.load('assets/white_noise.png');
-        whiteNoise.repeat.set(1, 1);
+        //whiteNoise.repeat.set(1, 1);
         whiteNoise.flipY = false;
-        whiteNoise.wrapS = whiteNoise.wrapT = THREE.RepeatWrapping;
+        //whiteNoise.wrapS = whiteNoise.wrapT = THREE.RepeatWrapping;
         whiteNoise.format = THREE.sRGBFormat;
         whiteNoise.encoding = THREE.sRGBEncoding;
         materials.keyboardColor = new THREE.MeshStandardMaterial({
@@ -546,12 +550,13 @@ var KeyboardRender;
             side: THREE.DoubleSide,
             dithering: true,
             envMap: textureCube,
-            envMapIntensity: 12,
-            //bumpMap: whiteNoise,
-            //bumpScale: 0.000000001,
+            envMapIntensity: 80,
+            normalMap: whiteNoise,
+            bumpScale: 1,
             metalness: 1,
             roughness: 0.9,
         });
+        materials.keyboardColor.flipY = false;
         // Materials
         materials.modLegends = new THREE.MeshStandardMaterial({
             color: materialColors.modLegends,
@@ -614,23 +619,28 @@ var KeyboardRender;
             metalness: 1,
         });
         var loader = new THREE.GLTFLoader();
+        THREE.DRACOLoader.setDecoderPath('three/js/libs/draco/');
+        THREE.DRACOLoader.getDecoderModule();
         loader.setDRACOLoader(new THREE.DRACOLoader());
-        loader.load('assets/idb60_wkl.glb', function (gltf) {
+        loader.load('assets/idb60_wkl_3_draco.gltf', function (gltf) {
             gltf.scene.children.forEach(function (child) {
+                console.log(child.name);
                 if (child.type == "Group") {
                     // Set Key Cap
-                    setKeyCap(child.children[0]);
+                    //setKeyCap(child.children[0]);
                     // Set Legend
-                    setLegend(child.children[1]);
+                    // setLegend(child.children[1]);
+                    applyKeycapMaterial(child);
                 }
                 else if (child.type == "Mesh") {
-                    if (child.name == "top_wkl_Body1_307" || child.name == "bottom_Body1_1") {
+                    console.log(child);
+                    if (child.name == "bottom1" || child.name == "top_wkl1") {
                         // Body Pieces
                         setBody(child);
                     }
                     else {
-                        // Set Key Cap
-                        setKeyCap(child);
+                        // spacebar :(
+                        child.material = materials.alphaBackground;
                     }
                 }
             });
@@ -638,18 +648,13 @@ var KeyboardRender;
             //console.log(gltf);
             gltf.scene.position.y = 0;
             gltf.scene.position.x = 2;
+            gltf.scene.rotateY(-Math.PI / 2);
             scene.add(gltf.scene);
-        });
-        KeyboardRender.renderer.shadowMap.enabled = true;
-        //renderer.shadowMap.autoUpdate = false;
-        KeyboardRender.renderer.shadowMap.soft = true;
-        KeyboardRender.renderer.setPixelRatio(window.devicePixelRatio);
-        KeyboardRender.renderer.setSize(threeContainer.offsetWidth, threeContainer.offsetHeight);
-        var composer = new THREE.EffectComposer(KeyboardRender.renderer);
-        composer.addPass(new THREE.RenderPass(scene, camera));
-        var smaa_pass = new THREE.SMAAPass(window.innerWidth * KeyboardRender.renderer.getPixelRatio(), window.innerHeight * KeyboardRender.renderer.getPixelRatio());
-        composer.addPass(smaa_pass);
-        /*let bokeh_pass = new THREE.BokehPass(scene, camera, {
+            var composer = new THREE.EffectComposer(KeyboardRender.renderer);
+            composer.addPass(new THREE.RenderPass(scene, camera));
+            var smaa_pass = new THREE.SMAAPass(window.innerWidth * KeyboardRender.renderer.getPixelRatio(), window.innerHeight * KeyboardRender.renderer.getPixelRatio());
+            composer.addPass(smaa_pass);
+            /*let bokeh_pass = new THREE.BokehPass(scene, camera, {
             focus: 300,
             aperture: 20,
             maxblur: 1.0,
@@ -657,9 +662,43 @@ var KeyboardRender;
             height: window.innerHeight
             });
             
-        composer.addPass(bokeh_pass);*/
+            composer.addPass(bokeh_pass);*/
+        }, function (xhr) {
+            console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+        });
+        KeyboardRender.renderer.setPixelRatio(window.devicePixelRatio);
+        KeyboardRender.renderer.setSize(threeContainer.offsetWidth, threeContainer.offsetHeight);
         threeContainer.appendChild(KeyboardRender.renderer.domElement);
         window.addEventListener('resize', resize, false);
+    }
+    function applyKeycapMaterial(obj) {
+        console.log(obj.name);
+        if (obj.children[0].material.name.indexOf('alpha_background') > -1)
+            obj.children[0].material = materials.alphaBackground;
+        else if (obj.children[0].material.name.indexOf('alpha_legends') > -1)
+            obj.children[0].material = materials.alphaLegends;
+        else if (obj.children[0].material.name.indexOf('mod_background') > -1)
+            obj.children[0].material = materials.modBackground;
+        else if (obj.children[0].material.name.indexOf('mod_legends') > -1)
+            obj.children[0].material = materials.modLegends;
+        else if (obj.children[0].material.name.indexOf('accent_background') > -1)
+            obj.children[0].material = materials.accentBackground;
+        else if (obj.children[0].material.name.indexOf('accent_legends') > -1)
+            obj.children[0].material = materials.accentLegends;
+        if (obj.children[1].material.name.indexOf('alpha_background') > -1)
+            obj.children[1].material = materials.alphaBackground;
+        else if (obj.children[1].material.name.indexOf('alpha_legends') > -1)
+            obj.children[1].material = materials.alphaLegends;
+        else if (obj.children[1].material.name.indexOf('mod_background') > -1)
+            obj.children[1].material = materials.modBackground;
+        else if (obj.children[1].material.name.indexOf('mod_legends') > -1)
+            obj.children[1].material = materials.modLegends;
+        else if (obj.children[1].material.name.indexOf('accent_background') > -1)
+            obj.children[1].material = materials.accentBackground;
+        else if (obj.children[1].material.name.indexOf('accent_legends') > -1)
+            obj.children[1].material = materials.accentLegends;
+        obj.receiveShadow = true;
+        obj.castShadow = true;
     }
     function setKeyCap(key) {
         if (boardMap.alphaBackground.indexOf(key.name) > -1)
@@ -681,8 +720,8 @@ var KeyboardRender;
     }
     function setBody(body) {
         //body.material = bodyMaterial;
-        if (boardMap.keyboardColor.indexOf(body.name) > -1)
-            body.material = materials.keyboardColor;
+        //if(boardMap.keyboardColor.indexOf(body.name) > -1)body.material = materials.keyboardColor;
+        body.material = materials.keyboardColor;
         body.receiveShadow = true;
         body.castShadow = true;
     }

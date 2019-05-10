@@ -69,7 +69,7 @@ namespace KeyboardRender {
     var inputOptions = [
         { id: 'alphaBackground', type: 'colorInput', label: "Alpha Background", defaultInput: 'cc' },
         { id: 'alphaLegends', type: 'colorInput', label: "Alpha Legends", defaultInput: 'ws1' },
-        { id: 'keyboardColor', type: 'colorInput', label: 'Keyboard Color', defaultInput: '#3b3b3b' },
+        { id: 'keyboardColor', type: 'colorInput', label: 'Keyboard Color', defaultInput: '#E7E7E7' },
         { id: 'modBackground', type: 'colorInput', label: 'Mod Background', defaultInput: 'n9' },
         { id: 'modLegends', type: 'colorInput', label: "Mod Legends", defaultInput: 'ws1' },
         { id: 'accentBackground', type: 'colorInput', label: "Accent Background", defaultInput: '#691F28'},
@@ -402,6 +402,11 @@ namespace KeyboardRender {
     function threeInit(): void {
 		renderer = new THREE.WebGLRenderer({antialias: true, preserveDrawingBuffer: true});
 		renderer.physicallyCorrectLights = true;
+		renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+		renderer.shadowMap.enabled = true;
+		//renderer.gammaOutput = true;
+		//renderer.shadowMap.autoUpdate = false;
+		renderer.shadowMap.soft = true;
 	
         camera = new THREE.PerspectiveCamera( 50, threeContainer.offsetWidth / threeContainer.offsetHeight, 0.1, 100 );
         camera.position.set(-3.2, 4.6, 0);
@@ -416,17 +421,17 @@ namespace KeyboardRender {
         scene.fog = new THREE.Fog(255, 255, 255);
 
 
-        /*let pointLight1 = new THREE.PointLight( 0xffffff, 1.0 );
+        let pointLight1 = new THREE.PointLight( 0xffffff, 1.0 );
         pointLight1.position.set( -5, 5, 5);
         pointLight1.castShadow = true;
-		pointLight1.shadow.mapSize.width = 2048;
-		pointLight1.shadow.mapSize.height = 2048;
-		pointLight1.power = 2000;
+		pointLight1.shadow.mapSize.width = 1024;
+		pointLight1.shadow.mapSize.height = 1024;
+		pointLight1.power = 1000;
 		pointLight1.decay = 2;
 		pointLight1.distance = Infinity;
         scene.add( pointLight1 );
 
-        let pointLight2 = new THREE.PointLight( 0xffffff, 0.5 );
+        /*let pointLight2 = new THREE.PointLight( 0xffffff, 0.5 );
         pointLight2.position.set( 0, 10, 0);
         pointLight2.castShadow = true;
 		pointLight2.shadow.mapSize.width = 2048;
@@ -512,7 +517,7 @@ namespace KeyboardRender {
 			metalness: 1,
 			dithering: true,
 			envMap: textureCube,
-			envMapIntensity: 12
+			envMapIntensity: 10
 		});
 		
 		let tablePlane = new THREE.Mesh( tableGeometry, materials.backgroundColor );
@@ -527,9 +532,9 @@ namespace KeyboardRender {
 
         // Colors and Material
         let whiteNoise = textureLoader.load('assets/white_noise.png');
-		whiteNoise.repeat.set(1, 1);
+		//whiteNoise.repeat.set(1, 1);
 		whiteNoise.flipY = false;
-		whiteNoise.wrapS = whiteNoise.wrapT = THREE.RepeatWrapping;
+		//whiteNoise.wrapS = whiteNoise.wrapT = THREE.RepeatWrapping;
 		whiteNoise.format = THREE.sRGBFormat;
 		whiteNoise.encoding = THREE.sRGBEncoding;
 
@@ -538,15 +543,17 @@ namespace KeyboardRender {
             side: THREE.DoubleSide,
             dithering: true,
             envMap: textureCube,
-			envMapIntensity: 12,
-            //bumpMap: whiteNoise,
-            //bumpScale: 0.000000001,
+			envMapIntensity: 80,
+            normalMap: whiteNoise,
+            bumpScale: 1,
             metalness: 1,
 			roughness: 0.9,
 			//roughnessMap: whiteNoise
             //emissive: 0xffffff,
             //emissiveIntensity: 0.01
         });
+		
+		materials.keyboardColor.flipY = false;
 
         // Materials
         materials.modLegends = new THREE.MeshStandardMaterial({
@@ -615,43 +622,47 @@ namespace KeyboardRender {
         });
 
         let loader = new THREE.GLTFLoader();
-        loader.setDRACOLoader(new THREE.DRACOLoader());
-        loader.load('assets/idb60_wkl.glb', (gltf)=>{
+        
+		THREE.DRACOLoader.setDecoderPath('three/js/libs/draco/');
+		THREE.DRACOLoader.getDecoderModule();
+		
+		loader.setDRACOLoader(new THREE.DRACOLoader());
+		
+        loader.load('assets/idb60_wkl_3_draco.gltf', (gltf)=>{
             gltf.scene.children.forEach((child)=>{
+				console.log(child.name);
                 if(child.type == "Group"){
                     // Set Key Cap
-                    setKeyCap(child.children[0]);
+                    //setKeyCap(child.children[0]);
                     // Set Legend
-                    setLegend(child.children[1]);
-                } else if(child.type == "Mesh"){
-                    if(child.name == "top_wkl_Body1_307" || child.name == "bottom_Body1_1"){
-                        // Body Pieces
-                        setBody(child);
-                    } else {
-                        // Set Key Cap
-                        setKeyCap(child);
-                    }
-                }
+                   // setLegend(child.children[1]);
+				   applyKeycapMaterial(child);
+					
+				}
+				else if(child.type == "Mesh") {
+					console.log(child);
+					if(child.name == "bottom1" || child.name == "top_wkl1"){
+						// Body Pieces
+						setBody(child);
+					} else {
+						// spacebar :(
+						child.material = materials.alphaBackground;
+					}
+				}
             });
             gltf.scene.castShadow = false;
             //console.log(gltf);
             gltf.scene.position.y = 0;
             gltf.scene.position.x = 2;
+			gltf.scene.rotateY(-Math.PI / 2);
             scene.add(gltf.scene);
-        });
-
-        renderer.shadowMap.enabled = true;
-		//renderer.shadowMap.autoUpdate = false;
-		renderer.shadowMap.soft = true;
-        renderer.setPixelRatio( window.devicePixelRatio );
-        renderer.setSize(threeContainer.offsetWidth, threeContainer.offsetHeight);
-		
-		let composer = new THREE.EffectComposer( renderer );
-		composer.addPass( new THREE.RenderPass( scene, camera ) );
-		let smaa_pass = new THREE.SMAAPass( window.innerWidth * renderer.getPixelRatio(), window.innerHeight * renderer.getPixelRatio() );
-		composer.addPass( smaa_pass );
-		
-		/*let bokeh_pass = new THREE.BokehPass(scene, camera, {
+			
+			let composer = new THREE.EffectComposer( renderer );
+			composer.addPass( new THREE.RenderPass( scene, camera ) );
+			let smaa_pass = new THREE.SMAAPass( window.innerWidth * renderer.getPixelRatio(), window.innerHeight * renderer.getPixelRatio() );
+			composer.addPass( smaa_pass );
+			
+			/*let bokeh_pass = new THREE.BokehPass(scene, camera, {
 			focus: 300,
 			aperture: 20,
 			maxblur: 1.0,
@@ -659,11 +670,43 @@ namespace KeyboardRender {
 			height: window.innerHeight
 			});
 			
-		composer.addPass(bokeh_pass);*/
+			composer.addPass(bokeh_pass);*/
+		
+        }, function ( xhr ) {
+
+			console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+
+		},);
+
+        renderer.setPixelRatio( window.devicePixelRatio );
+        renderer.setSize(threeContainer.offsetWidth, threeContainer.offsetHeight);
+		
 				
         threeContainer.appendChild( renderer.domElement );
         window.addEventListener( 'resize', resize, false );
     }
+	
+	function applyKeycapMaterial(obj): void {
+	
+		console.log(obj.name);
+		
+		if (obj.children[0].material.name.indexOf('alpha_background') > -1) obj.children[0].material = materials.alphaBackground;
+		else if (obj.children[0].material.name.indexOf('alpha_legends') > -1) obj.children[0].material = materials.alphaLegends;
+		else if (obj.children[0].material.name.indexOf('mod_background') > -1) obj.children[0].material = materials.modBackground;
+		else if (obj.children[0].material.name.indexOf('mod_legends') > -1) obj.children[0].material = materials.modLegends;
+		else if (obj.children[0].material.name.indexOf('accent_background') > -1) obj.children[0].material = materials.accentBackground;
+		else if (obj.children[0].material.name.indexOf('accent_legends') > -1) obj.children[0].material = materials.accentLegends;
+		
+		if (obj.children[1].material.name.indexOf('alpha_background') > -1) obj.children[1].material = materials.alphaBackground;
+		else if (obj.children[1].material.name.indexOf('alpha_legends') > -1) obj.children[1].material = materials.alphaLegends;
+		else if (obj.children[1].material.name.indexOf('mod_background') > -1) obj.children[1].material = materials.modBackground;
+		else if (obj.children[1].material.name.indexOf('mod_legends') > -1) obj.children[1].material = materials.modLegends;
+		else if (obj.children[1].material.name.indexOf('accent_background') > -1) obj.children[1].material = materials.accentBackground;
+		else if (obj.children[1].material.name.indexOf('accent_legends') > -1) obj.children[1].material = materials.accentLegends;
+		
+		obj.receiveShadow = true;
+		obj.castShadow = true;
+	}
 
     function setKeyCap(key): void {
         if(boardMap.alphaBackground.indexOf(key.name) > -1) key.material = materials.alphaBackground;
@@ -681,7 +724,8 @@ namespace KeyboardRender {
 
     function setBody(body): void {
         //body.material = bodyMaterial;
-        if(boardMap.keyboardColor.indexOf(body.name) > -1)body.material = materials.keyboardColor;
+        //if(boardMap.keyboardColor.indexOf(body.name) > -1)body.material = materials.keyboardColor;
+		body.material = materials.keyboardColor;
         body.receiveShadow = true;
 		body.castShadow = true;
     }
